@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: unused
+spec:
+  template:
+    spec:
+      containers:
+        - name: mastodon
+          env:
+            - name: RAILS_ENV
+              value: production
+            - name: LOCAL_DOMAIN
+              value: <<<DOMAIN>>
+            - name: DB_POOL
+              value: "5"
+            - name: REDIS_HOST
+              value: redis
+            - name: REDIS_PORT
+              value: "6379"
+            - name: DB_HOST
+              value: postgres
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_USER
+              value: postgres
+            - name: DB_PASS
+              value: ""
+            - name: DB_NAME
+              value: postgres
+            - name: SECRET_KEY_BASE
+              valueFrom:
+                secretKeyRef:
+                  name: mastodon
+                  key: secret_key_base
+                  optional: false
+            - name: OTP_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: mastodon
+                  key: otp_secret
+                  optional: false
+            - name: VAPID_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: mastodon
+                  key: vapid_private_key
+                  optional: false
+            - name: VAPID_PUBLIC_KEY
+              value: <<<VAPID PUBLIC KEY>>>
+            - name: S3_ENABLED
+              value: "true"
+            - name: S3_BUCKET
+              value: <<<BUCKET>>>
+            - name: AWS_ACCESS_KEY_ID
+              value: <<<ACCESS KEY ID>>>
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: mastodon
+                  key: aws_secret_access_key
+                  optional: false
+            - name: S3_REGION
+              value: "eu-west-2"
+            - name: S3_PROTOCOL
+              value: "https"
+            - name: S3_HOSTNAME
+              value: "s3.eu-west-2.wasabisys.com"
+            - name: S3_ENDPOINT
+              value: "https://s3.eu-west-2.wasabisys.com/"
+            - name: SMTP_SERVER
+              value: smtp.sendgrid.net
+            - name: SMTP_PORT
+              value: "587"
+            - name: SMTP_LOGIN
+              value: apikey
+            - name: SMTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mastodon
+                  key: smtp_password
+                  optional: false
+            - name: SMTP_AUTH_METHOD
+              value: plain
+            - name: SMTP_FROM_ADDRESS
+              value: <<<SMTP FROM ADDRESS>>>
+            - name: SMTP_TLS
+              value: "1"
+            - name: SINGLE_USER_MODE
+              value: "true"
+            - name: STATSD_ADDR
+              value: "datadog.default.svc.cluster.local:8125"

@@ -1,0 +1,46 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base/mastodon/mastodon-fe
+  - ../../base/mastodon/mastodon-sidekiq-aio
+  #- ../../base/mastodon/mastodon-sidekiq-single
+  - ../../base/services
+
+patches:
+  - path: patches/mastodon/add_env_vars.yaml
+    target:
+      group: apps
+      version: v1
+      kind: Deployment
+      labelSelector: "type in (mastodon-web, mastodon-streaming, mastodon-worker)"
+  - path: patches/mastodon/add_env_vars.yaml
+    target:
+      group: batch
+      version: v1
+      kind: Job
+      labelSelector: "type in (mastodon-job)"
+  - patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: <<<DOMAIN>>>
+      - op: replace
+        path: /spec/tls/0/hosts/0
+        value: <<<DOMAIN>>>
+    target:
+      group: networking.k8s.io
+      version: v1
+      kind: Ingress
+      name: mastodon
+  - patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/livenessProbe/httpGet/httpHeaders/0/value
+        value: <<<DOMAIN>>>
+      - op: replace
+        path: /spec/template/spec/containers/0/readinessProbe/httpGet/httpHeaders/0/value
+        value: <<<DOMAIN>>>
+    target:
+      group: apps
+      version: v1
+      kind: Deployment
+      labelSelector: "type in (mastodon-web)"

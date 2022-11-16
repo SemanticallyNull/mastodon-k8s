@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mastodon-web
+  labels:
+    app: mastodon-web
+    type: mastodon-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mastodon-web
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: mastodon-web
+    spec:
+      containers:
+      - name: mastodon
+        resources:
+          requests:
+            memory: 1Gi
+            cpu: 250m
+          limits:
+            memory: 1Gi
+            cpu: 250m
+        image: tootsuite/mastodon:v4.0.0rc3
+        command: ["bundle", "exec", "rails", "s", "-p", "3000"]
+        ports:
+        - containerPort: 3000
+        livenessProbe:
+          httpGet:
+            port: 3000
+            path: /health
+            httpHeaders:
+            - name: Host
+              value: toot.localhost
+          initialDelaySeconds: 30
+          timeoutSeconds: 15
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            port: 3000
+            path: /health
+            httpHeaders:
+            - name: Host
+              value: toot.localhost
+          initialDelaySeconds: 30
+          timeoutSeconds: 15
+          periodSeconds: 30

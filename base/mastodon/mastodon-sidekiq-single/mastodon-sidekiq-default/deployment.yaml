@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mastodon-sidekiq-default
+  labels:
+    app: mastodon-sidekiq-default
+    type: mastodon-worker
+spec:
+  selector:
+    matchLabels:
+      app: mastodon-sidekiq-default
+  template:
+    metadata:
+      labels:
+        app: mastodon-sidekiq-default
+    spec:
+      containers:
+      - name: mastodon
+        image: tootsuite/mastodon:v4.0.0rc3
+        command: ["bundle", "exec", "sidekiq", "-q", "default"]
+        resources:
+          requests:
+            memory: 1Gi
+            cpu: 250m
+          limits:
+            memory: 1Gi
+            cpu: 250m

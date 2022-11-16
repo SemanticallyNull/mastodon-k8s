@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mastodon-sidekiq-pull
+  labels:
+    app: mastodon-sidekiq-pull
+    type: mastodon-worker
+spec:
+  selector:
+    matchLabels:
+      app: mastodon-sidekiq-pull
+  template:
+    metadata:
+      labels:
+        app: mastodon-sidekiq-pull
+    spec:
+      containers:
+      - name: mastodon
+        image: tootsuite/mastodon:v4.0.0rc3
+        command: ["bundle", "exec", "sidekiq", "-q", "pull"]
+        resources:
+          requests:
+            memory: 512Mi
+            cpu: 250m
+          limits:
+            memory: 512Mi
+            cpu: 250m

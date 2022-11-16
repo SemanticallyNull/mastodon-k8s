@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mastodon-sidekiq-ingress
+  labels:
+    app: mastodon-sidekiq-ingress
+    type: mastodon-worker
+spec:
+  selector:
+    matchLabels:
+      app: mastodon-sidekiq-ingress
+  template:
+    metadata:
+      labels:
+        app: mastodon-sidekiq-ingress
+    spec:
+      containers:
+      - name: mastodon
+        image: tootsuite/mastodon:v4.0.0rc3
+        command: ["bundle", "exec", "sidekiq", "-q", "ingress"]
+        resources:
+          requests:
+            memory: 512Mi
+            cpu: 250m
+          limits:
+            memory: 512Mi
+            cpu: 250m

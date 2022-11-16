@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mastodon-sidekiq-aio
+  labels:
+    app: mastodon-sidekiq-aio
+    type: mastodon-worker
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mastodon-sidekiq-aio
+  template:
+    metadata:
+      labels:
+        app: mastodon-sidekiq-aio
+    spec:
+      containers:
+        - name: mastodon
+          image: tootsuite/mastodon:v4.0.0rc3
+          command: ["bundle", "exec", "sidekiq", "-q", "default,8", "-q", "push,6", "-q", "ingress,4", "-q", "mailers,2", "-q", "pull", "-c", "5"]
+          resources:
+            requests:
+              memory: 1Gi
+              cpu: 250m
+            limits:
+              memory: 1Gi
+              cpu: 250m
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mastodon-sidekiq-scheduler
+  labels:
+    app: mastodon-sidekiq-scheduler
+    type: mastodon-worker
+spec:
+  selector:
+    matchLabels:
+      app: mastodon-sidekiq-scheduler
+  template:
+    metadata:
+      labels:
+        app: mastodon-sidekiq-scheduler
+    spec:
+      containers:
+        - name: mastodon
+          image: tootsuite/mastodon:v4.0.0rc3
+          command: ["bundle", "exec", "sidekiq", "-q", "scheduler", "-c", "2"]
+          resources:
+            requests:
+              memory: 1Gi
+              cpu: 250m
+            limits:
+              memory: 1Gi
+              cpu: 250m

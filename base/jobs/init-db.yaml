@@ -1,0 +1,14 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mastodon-init-db
+  labels:
+    type: mastodon-job
+spec:
+  template:
+    spec:
+      containers:
+        - name: mastodon
+          image: tootsuite/mastodon:v4.0.0rc3
+          command: ["bundle", "exec", "rake", "db:setup"]
+      restartPolicy: OnFailure

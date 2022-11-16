@@ -1,0 +1,8 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- mastodon-sidekiq-default
+- mastodon-sidekiq-ingress
+- mastodon-sidekiq-scheduler
+- mastodon-sidekiq-pull
+- mastodon-sidekiq-push
